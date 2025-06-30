@@ -1,16 +1,16 @@
 {
-  "nivel_remoto": {
-    "nome": "R. Antônio da Veiga",
-    "latitude": -26.905573,
-    "longitude": -49.077119,
-    "limite_atencao": 0.3,
-    "limite_critico": 0.8,
-  },
   "nivel_local": {
     "nome": "Parque das Itoupavas",
     "latitude": -26.860641,
     "longitude": -49.081174,
     "limite_atencao": 0.5,
-    "limite_critico": 1.0,
+    "limite_critico": 1.0
+  },
+  "nivel_remoto": {
+    "nome": "R. Antônio da Veiga",
+    "latitude": -26.905573,
+    "longitude": -49.077119,
+    "limite_atencao": 0.3,
+    "limite_critico": 0.8
   }
 }
