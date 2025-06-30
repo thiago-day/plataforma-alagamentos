@@ -8,7 +8,7 @@ fetch("config-sensores.json")
   .then(response => response.json())
   .then(config => {
     configSensores = config;
-    const sensorKeys = Object.keys(configSensores).join(",");
+    const chaves = Object.keys(configSensores).join(",");
 
     // Inicializa o mapa
     mapa = L.map('map').setView([-23.5505, -46.6333], 14);
@@ -16,54 +16,54 @@ fetch("config-sensores.json")
       attribution: 'Map data &copy; OpenStreetMap contributors'
     }).addTo(mapa);
 
-    // Atualiza os dados pela primeira vez
-    atualizarSensores(sensorKeys);
-
-    // Atualiza a cada 30 segundos
-    setInterval(() => atualizarSensores(sensorKeys), 30000);
+    atualizarSensores(chaves);
+    setInterval(() => atualizarSensores(chaves), 30000); // Atualiza a cada 30s
   });
 
-function atualizarSensores(sensorKeys) {
-  fetch(`https://demo.thingsboard.io/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=${sensorKeys}`, {
+function atualizarSensores(chaves) {
+  fetch(`https://demo.thingsboard.io/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=${chaves}`, {
     headers: {
       "X-Authorization": `Bearer ${token}`
     }
   })
     .then(response => response.json())
     .then(telemetria => {
-      for (let sensor in telemetria) {
-        const dadosSensor = configSensores[sensor];
-        if (!dadosSensor) continue;
+      for (let chave in telemetria) {
+        const ponto = configSensores[chave];
+        if (!ponto) continue;
 
-        const valorNivel = parseFloat(telemetria[sensor][0].value);
-        const { status, cor } = classificarNivel(valorNivel);
+        const valorNivel = parseFloat(telemetria[chave][0].value);
+        const { status, cor } = classificarNivel(
+          valorNivel,
+          ponto.limite_atencao,
+          ponto.limite_critico
+        );
 
-        // Se já existir marcador, remova
-        if (marcadores[sensor]) {
-          mapa.removeLayer(marcadores[sensor]);
+        // Remove marcador anterior, se existir
+        if (marcadores[chave]) {
+          mapa.removeLayer(marcadores[chave]);
         }
 
-        // Cria novo marcador
-        const marker = L.circleMarker([dadosSensor.latitude, dadosSensor.longitude], {
+        const marcador = L.circleMarker([ponto.latitude, ponto.longitude], {
           radius: 10,
           color: cor,
           fillColor: cor,
           fillOpacity: 0.8
         }).addTo(mapa);
 
-        marker.bindPopup(`
-          <b>${dadosSensor.nome}</b><br>
+        marcador.bindPopup(`
+          <b>${ponto.nome}</b><br>
           Nível: ${valorNivel.toFixed(2)} m<br>
           Estado: ${status}
         `);
 
-        marcadores[sensor] = marker;
+        marcadores[chave] = marcador;
       }
     });
 }
 
-function classificarNivel(nivel) {
-  if (nivel < 0.5) return { status: "Normal", cor: "green" };
-  if (nivel < 1.0) return { status: "Atenção", cor: "orange" };
+function classificarNivel(nivel, limiteAtencao, limiteCritico) {
+  if (nivel < limiteAtencao) return { status: "Normal", cor: "green" };
+  if (nivel < limiteCritico) return { status: "Atenção", cor: "orange" };
   return { status: "Crítico", cor: "red" };
 }
