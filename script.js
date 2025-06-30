@@ -51,11 +51,10 @@ function atualizarSensores(chaves) {
           fillOpacity: 0.8
         }).addTo(mapa);
 
-        marcador.bindPopup(`
-          <b>${ponto.nome}</b><br>
-          Nível: ${valorNivel.toFixed(2)} m<br>
-          Estado: ${status}
-        `);
+        // Redireciona para a tela de detalhes ao clicar
+        marcador.on("click", () => {
+          window.location.href = `detalhes.html?chave=${chave}`;
+        });
 
         marcadores[chave] = marcador;
       }
