@@ -12,7 +12,7 @@ fetch("config-sensores.json")
     const chaves = Object.keys(configSensores).join(",");
 
     // Inicializa o mapa
-    mapa = L.map('map').setView([-23.5505, -46.6333], 14);
+    mapa = L.map('map').setView([-26.871213, -49.098646], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data &copy; OpenStreetMap contributors'
     }).addTo(mapa);
