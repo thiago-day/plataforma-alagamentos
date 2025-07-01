@@ -5,13 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes da Estação</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2 id="titulo">Detalhes da Estação</h2>
-  <div id="info"></div>
-  <canvas id="graficoHistorico"></canvas>
+  <h2 id="tituloEstacao">Detalhes da Estação</h2>
+  <p><strong>Nível atual:</strong> <span id="nivelAtual"></span> m</p>
+  <canvas id="graficoHistorico" width="400" height="200"></canvas>
 
+  <div class="setpoints">
+    <label>Alarme de Atenção (m): <input type="number" id="inputAtencao" step="0.01"></label>
+    <label>Alarme Crítico (m): <input type="number" id="inputCritico" step="0.01"></label>
+    <button id="btnSalvarSetpoints">Salvar Alterações</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="detalhes.js"></script>
 </body>
 </html>
