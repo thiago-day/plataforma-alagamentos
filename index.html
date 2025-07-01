@@ -11,7 +11,24 @@
   <h2>Mapa de Pontos de Alagamento</h2>
   <div id="map"></div>
 
+  <!-- Modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" id="fecharModal">&times;</span>
+      <h3 id="modalTitulo">Detalhes da Estação</h3>
+      <p><strong>Nível atual:</strong> <span id="nivelAtual"></span> m</p>
+      <canvas id="graficoHistorico"></canvas>
+
+      <div class="setpoints">
+        <label>Alarme de Atenção (m): <input type="number" id="inputAtencao" step="0.01"></label>
+        <label>Alarme Crítico (m): <input type="number" id="inputCritico" step="0.01"></label>
+        <button id="btnSalvarSetpoints">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
