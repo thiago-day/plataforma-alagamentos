@@ -11,14 +11,13 @@ fetch("config-sensores.json")
     configSensores = config;
     const chaves = Object.keys(configSensores).join(",");
 
-    // Inicializa o mapa
-    mapa = L.map('map').setView([-26.871213, -49.098646], 14);
+    mapa = L.map('map').setView([-23.5505, -46.6333], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data &copy; OpenStreetMap contributors'
     }).addTo(mapa);
 
     atualizarSensores(chaves);
-    setInterval(() => atualizarSensores(chaves), 30000); // Atualiza a cada 30s
+    setInterval(() => atualizarSensores(chaves), 30000);
   });
 
 function atualizarSensores(chaves) {
@@ -52,7 +51,6 @@ function atualizarSensores(chaves) {
         }).addTo(mapa);
 
         marcador.on("click", () => abrirModal(chave, valorNivel));
-
         marcadores[chave] = marcador;
       }
     });
@@ -74,9 +72,9 @@ function abrirModal(chave, valorAtual) {
   document.getElementById("inputCritico").value = sensor.limite_critico;
 
   const modal = document.getElementById("modal");
-  modal.classList.remove("hidden");
+  modal.classList.add("show");
 
-  document.getElementById("fecharModal").onclick = () => modal.classList.add("hidden");
+  document.getElementById("fecharModal").onclick = () => modal.classList.remove("show");
 
   document.getElementById("btnSalvarSetpoints").onclick = () => {
     const novoAtencao = parseFloat(document.getElementById("inputAtencao").value);
