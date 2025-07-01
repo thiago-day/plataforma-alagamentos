@@ -1,43 +1,57 @@
 // === CONFIGURAÇÕES ===
 const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZXV2aXN1YWxpemFkb3JAZ21haWwuY29tIiwidXNlcklkIjoiMGI4OGE5ZDAtMzVkNC0xMWYwLTk2NjQtZmYxM2VjY2I0N2ZmIiwic2NvcGVzIjpbIkNVU1RPTUVSX1VTRVIiXSwic2Vzc2lvbklkIjoiOTU0MGRkZTktYTgxNS00NmY0LTk2ZjMtYWUwY2NhN2Q5ZTA1IiwiZXhwIjoxNzUzMTI1NTQ4LCJpc3MiOiJ0aGluZ3Nib2FyZC5pbyIsImlhdCI6MTc1MTMyNTU0OCwiZW5hYmxlZCI6dHJ1ZSwicHJpdmFjeVBvbGljeUFjY2VwdGVkIjpmYWxzZSwiaXNQdWJsaWMiOmZhbHNlLCJ0ZW5hbnRJZCI6IjA3YTIxYjgwLTA5MGItMTFmMC05ODFkLTU3ZDYxMWI4MDczNCIsImN1c3RvbWVySWQiOiJiOTE5ZTkyMC0zNWQzLTExZjAtOTY2NC1mZjEzZWNjYjQ3ZmYifQ.YbE7BH1RyuRI-XEBDfjcjbhLLuM31q_j35Z4gqGcxkna4m8UaEkoK-4i42modJ8OEt9h0bNzpnMTIgSYIOOq-A";
 const deviceId = "bccae870-090b-11f0-981d-57d611b80734";
+let configSensores = {};
+let grafico = null;
 
-// === COLETA DA CHAVE VIA URL ===
 const params = new URLSearchParams(window.location.search);
 const chave = params.get("chave");
 
 if (!chave) {
-  document.getElementById("info").innerText = "Chave não fornecida na URL.";
-  throw new Error("Chave ausente");
+  alert("Chave de estação não fornecida.");
+  window.close();
 }
 
-// === OBTÉM CONFIGURAÇÃO DO SENSOR ===
 fetch("config-sensores.json")
   .then(res => res.json())
   .then(config => {
-    const sensor = config[chave];
-    if (!sensor) throw new Error("Chave não encontrada no configurador");
+    configSensores = config;
+    const sensor = configSensores[chave];
+    if (!sensor) {
+      alert("Estação não encontrada.");
+      window.close();
+    }
 
-    document.getElementById("titulo").innerText = sensor.nome;
-    document.getElementById("info").innerHTML = `
-      <p>Localização: ${sensor.latitude}, ${sensor.longitude}</p>
-      <p>Classificação:</p>
-      <ul>
-        <li>Normal: abaixo de ${sensor.limite_atencao} m</li>
-        <li>Atenção: ${sensor.limite_atencao} a ${sensor.limite_critico} m</li>
-        <li>Crítico: acima de ${sensor.limite_critico} m</li>
-      </ul>
-    `;
+    document.getElementById("tituloEstacao").innerText = sensor.nome;
+    document.getElementById("inputAtencao").value = sensor.limite_atencao;
+    document.getElementById("inputCritico").value = sensor.limite_critico;
 
-    buscarHistorico(chave);
+    document.getElementById("btnSalvarSetpoints").onclick = () => {
+      sensor.limite_atencao = parseFloat(document.getElementById("inputAtencao").value);
+      sensor.limite_critico = parseFloat(document.getElementById("inputCritico").value);
+      alert("Setpoints atualizados localmente.");
+    };
+
+    buscarNivelAtual();
+    buscarHistorico();
   });
 
-// === FUNÇÃO PARA BUSCAR DADOS HISTÓRICOS ===
-function buscarHistorico(chave) {
+function buscarNivelAtual() {
+  fetch(`https://demo.thingsboard.io/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=${chave}`, {
+    headers: { "X-Authorization": `Bearer ${token}` }
+  })
+    .then(res => res.json())
+    .then(dados => {
+      const valor = parseFloat(dados[chave][0].value);
+      document.getElementById("nivelAtual").innerText = valor.toFixed(2);
+    });
+}
+
+function buscarHistorico() {
   const agora = Date.now();
   const umDiaAtras = agora - 24 * 60 * 60 * 1000;
 
-  const url = `https://demo.thingsboard.io/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=${chave}&startTs=${umDiaAtras}&endTs=${agora}&interval=600000&limit=1000&agg=AVG`;
+  const url = `https://demo.thingsboard.io/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=${chave}&startTs=${umDiaAtras}&endTs=${agora}&limit=1000&agg=NONE`;
 
   fetch(url, {
     headers: { "X-Authorization": `Bearer ${token}` }
@@ -48,16 +62,13 @@ function buscarHistorico(chave) {
       const labels = historico.map(p => new Date(p.ts).toLocaleTimeString("pt-BR"));
       const valores = historico.map(p => parseFloat(p.value));
       montarGrafico(labels, valores);
-    })
-    .catch(erro => {
-      console.error("Erro ao buscar dados do ThingsBoard:", erro);
-      document.getElementById("graficoHistorico").outerHTML = "<p>Erro ao carregar gráfico.</p>";
     });
 }
 
-// === FUNÇÃO PARA MONTAR GRÁFICO ===
 function montarGrafico(labels, valores) {
-  new Chart(document.getElementById("graficoHistorico"), {
+  if (grafico) grafico.destroy();
+  const ctx = document.getElementById("graficoHistorico").getContext("2d");
+  grafico = new Chart(ctx, {
     type: "line",
     data: {
       labels,
@@ -76,4 +87,5 @@ function montarGrafico(labels, valores) {
       }
     }
   });
+}
 }
