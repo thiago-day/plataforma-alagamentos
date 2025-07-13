@@ -3,8 +3,8 @@
     "nome": "Parque das Itoupavas",
     "latitude": -26.860641,
     "longitude": -49.081174,
-    "limite_atencao": -0.5,
-    "limite_critico": 1.0
+    "limite_atencao": -1.5,
+    "limite_critico": 0.0
   },
   "nivel_remoto": {
     "nome": "R. Antônio da Veiga",
