@@ -3,7 +3,7 @@
     "nome": "Parque das Itoupavas",
     "latitude": -26.860641,
     "longitude": -49.081174,
-    "limite_atencao": 0.5,
+    "limite_atencao": -0.5,
     "limite_critico": 1.0
   },
   "nivel_remoto": {
