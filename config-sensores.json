@@ -17,7 +17,7 @@
     "nome": "R. Almirante Barroso",
     "latitude": -26.902660,
     "longitude": -49.089289,
-    "limite_atencao": 0.3,
+    "limite_atencao": -0.3,
     "limite_critico": 0.8
   }
 }
