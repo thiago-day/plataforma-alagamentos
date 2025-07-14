@@ -7,9 +7,16 @@
     "limite_critico": 0.0
   },
   "nivel_remoto": {
-    "nome": "R. Antônio da Veiga",
-    "latitude": -26.905573,
-    "longitude": -49.077119,
+    "nome": "R. São Paulo",
+    "latitude": -26.909529,
+    "longitude": -49.072880,
+    "limite_atencao": 0.3,
+    "limite_critico": 0.8
+  },
+  "nivel_remoto_02": {
+    "nome": "R. Almirante Barroso",
+    "latitude": -26.902660,
+    "longitude": -49.089289,
     "limite_atencao": 0.3,
     "limite_critico": 0.8
   }
